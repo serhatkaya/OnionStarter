@@ -6,6 +6,6 @@ namespace OnionStarter.Persistence.Repositories;
 
 public class ProductRepository : Repository<Product>, IProductRepository
 {
-    public ProductRepository(ApplicationDbContext context) : base(context)
+    public ProductRepository(ApplicationDbContext dbContext) : base(dbContext)
     { }
 }

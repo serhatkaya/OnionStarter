@@ -7,22 +7,22 @@ namespace OnionStarter.Persistence.Repositories;
 
 public class Repository<T> : IRepository<T> where T : BaseEntity, new()
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ApplicationDbContext _dbContext;
 
-    public Repository(ApplicationDbContext context)
+    public Repository(ApplicationDbContext dbContext)
     {
-        _context = context;
+        _dbContext = dbContext;
     }
 
     private DbSet<T> Table
     {
-        get => _context.Set<T>();
+        get => _dbContext.Set<T>();
     }
 
     public async Task<T> AddAsync(T entity)
     {
         await Table.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
         return entity;
     }
 

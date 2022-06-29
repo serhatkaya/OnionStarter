@@ -1,34 +1,70 @@
 using Microsoft.AspNetCore.Mvc;
-using OnionStarter.Application.Interfaces.Repositories;
-using OnionStarter.Application.Interfaces.Services;
-using OnionStarter.Domain.Entities;
+using OnionStarter.Application.Features.ProductFeatures.Commands;
+using OnionStarter.Application.Features.ProductFeatures.Queries;
+using OnionStarter.WebAPI.Controllers.Base;
 
 namespace OnionStarter.WebAPI.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
-public class ProductController : ControllerBase
+[ApiVersion("1.0")]
+public class ProductController : BaseApiController
 {
-    readonly IProductRepository _productRepository;
-    readonly IEmailService _emailService;
-
-    public ProductController(IProductRepository productRepository, IEmailService emailService)
+    /// <summary>
+    /// Creates a New Product.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateProductCommand command)
     {
-        _productRepository = productRepository;
-        _emailService = emailService;
+        return Ok(await Mediator.Send(command));
     }
 
+    /// <summary>
+    /// Gets all Products.
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> GetAll()
     {
-        List<Product> allProducts = await _productRepository.GetAsync();
-        return Ok(allProducts);
+        return Ok(await Mediator.Send(new GetAllProductsQuery()));
     }
 
-    [HttpGet("send-email")]
-    public IActionResult SendEmail()
+    /// <summary>
+    /// Gets Product Entity by Id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
     {
-        bool result = _emailService.Send("root@serhatkaya.com.tr", "There is no place like 127.0.0.1");
-        return Ok(result);
+        return Ok(await Mediator.Send(new GetProductByIdQuery { Id = id }));
+    }
+
+    /// <summary>
+    /// Deletes Product Entity based on Id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        return Ok(await Mediator.Send(new DeleteProductByIdCommand { Id = id }));
+    }
+
+    /// <summary>
+    /// Updates the Product Entity based on Id.   
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="command"></param>
+    /// <returns></returns>
+    [HttpPut("[action]")]
+    public async Task<IActionResult> Update(Guid id, UpdateProductCommand command)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest();
+        }
+
+        return Ok(await Mediator.Send(command));
     }
 }

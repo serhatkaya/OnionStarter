@@ -4,12 +4,21 @@ using OnionStarter.Domain.Entities;
 
 namespace OnionStarter.Persistence.Contexts;
 
-public class ApplicationDbContext : DbContext, IApplicationContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
     { }
 
     public DbSet<Product> Products { get; set; }
+    public int SaveChanges()
+    {
+        return base.SaveChanges();
+    }
+
+    public Task<int> SaveChangesAsync()
+    {
+        return base.SaveChangesAsync();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

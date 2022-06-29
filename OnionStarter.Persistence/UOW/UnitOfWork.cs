@@ -2,20 +2,20 @@ using Microsoft.EntityFrameworkCore.Storage;
 using OnionStarter.Application.Interfaces.Repositories;
 using OnionStarter.Persistence.Contexts;
 
-namespace OnionStarter.Persistence.UnitOfWork;
+namespace OnionStarter.Persistence.UOW;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ApplicationDbContext _dbContext;
     public IProductRepository ProductRepository { get; }
 
-    public UnitOfWork(ApplicationDbContext context, IProductRepository productRepository)
+    public UnitOfWork(ApplicationDbContext dbContext, IProductRepository productRepository)
     {
-        _context = context;
+        _dbContext = dbContext;
         ProductRepository = productRepository;
     }
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync() => await _context.Database.BeginTransactionAsync();
+    public async Task<IDbContextTransaction> BeginTransactionAsync() => await _dbContext.Database.BeginTransactionAsync();
 
     public async ValueTask DisposeAsync()
     { }
